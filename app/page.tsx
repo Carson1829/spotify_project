@@ -36,17 +36,19 @@ export default function Home() {
   const handleInputChange = async (event) => {
     const query = event.target.value;
     setSearchQuery(query);
-
+  
     if (query.length > 0) {
-      // Fetch suggestions from the backend
       try {
         const response = await fetch(`http://localhost:5000/api/search?query=${query}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
         const data = await response.json();
-
+  
         const filteredSuggestions = data.filter(suggestion =>
-          suggestion.toLowerCase().startsWith(query.toLowerCase())
+          suggestion.track.toLowerCase().startsWith(query.toLowerCase())
         );
-
+  
         setSuggestions(filteredSuggestions);
       } catch (error) {
         console.error("Error fetching suggestions:", error);
@@ -56,10 +58,34 @@ export default function Home() {
     }
   };
 
-  const handleSuggestionClick = (suggestion) => {
-    setSearchQuery(suggestion);
+  
+  const handleSuggestionClick = async (suggestion) => {
+    console.log('Suggestion clicked:', suggestion);
+    setSearchQuery(suggestion.track + ' - ' + suggestion.artist);
     setSuggestions([]);
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ track: suggestion.track, artist: suggestion.artist }),
+      });
+      
+      console.log('Response status:', response.status);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      const data = await response.json();
+      console.log('Received data:', data);
+      setTempMsg(data.genre);  // Display the predicted genre
+    } catch (error) {
+      console.error("Error fetching prediction:", error);
+    }
   };
+  
 
   return (
     <ThemeProvider theme={theme}>
@@ -127,9 +153,9 @@ export default function Home() {
                 <List>
                   {suggestions.map((suggestion, index) => (
                     <ListItem key={index} disablePadding>
-                      <ListItemButton onClick={() => handleSuggestionClick(suggestion)}>
-                        {/* {`${suggestion.track} - ${suggestion.artist}`} */}
-                        {suggestion}
+                      <ListItemButton onClick={() => handleSuggestionClick({suggestion})}>
+                        {`${suggestion.track} - ${suggestion.artist}`}
+                        {/*{suggestion}*/}
                       </ListItemButton>
                     </ListItem>
                   ))}
