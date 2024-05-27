@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 //import Canvas from "./components/canvas";
 import {
   Box,
@@ -23,16 +23,12 @@ export default function Home() {
   const primary_color = theme.palette.primary;
   // setState for responsive frontend to any backend calls
   const [tempMsg, setTempMsg] = useState("");
-  const updateTempMsg = (newMsg: React.SetStateAction<string>) => {
-    setTempMsg(newMsg);
-  };
 
-  // State for search query and suggestions
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedSong, setSelectedSong] = useState("");
 
-  // Function to handle input changes
+  // function to handle input changes in search bar
   const handleInputChange = async (event) => {
     const query = event.target.value;
     setSearchQuery(query);
@@ -58,13 +54,12 @@ export default function Home() {
     }
   };
 
-  
+  // function to handle clicks on suggestion list
   const handleSuggestionClick = async (suggestion) => {
     console.log('Suggestion clicked:', suggestion);
     const track = suggestion.suggestion.track;
     const artist = suggestion.suggestion.artist;
 
-    // Set the search query
     setSearchQuery('');
     setSuggestions([]);
     setSelectedSong(`${track} - ${artist}`);
@@ -159,7 +154,6 @@ export default function Home() {
                     <ListItem key={index} disablePadding>
                       <ListItemButton onClick={() => handleSuggestionClick({suggestion})}>
                         {`${suggestion.track} - ${suggestion.artist}`}
-                        {/*{suggestion}*/}
                       </ListItemButton>
                     </ListItem>
                   ))}
@@ -167,13 +161,13 @@ export default function Home() {
               </div>
             </Paper>
 
-            {/* section displaying selected song */}
+            {/* section displaying predicted genre*/}
             <Paper sx={{ backgroundColor: primary_color.main, height: "100%", padding: { xs: 0, sm: 2 }, width: { xs: "100%", sm: "20%" } }} elevation={5}>
               <Typography variant="h6" sx={{ margin: "10px" }}>
                 Predicted genre:
               </Typography>
               <Typography variant="h5" sx={{ margin: "10px" }}>
-                {/* Temporary message for now, reacts to backend responses */}
+                {/* reacts to backend responses */}
                 {tempMsg}
               </Typography>
             </Paper>
