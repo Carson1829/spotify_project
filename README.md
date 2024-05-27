@@ -1,5 +1,11 @@
 TODO
-send searched song to backend when clicked on
+add model to the predict song function and work on backend 
+
+CURRENT STATE
+can search and click on a song suggestion from the dataset
+has frontend to backend calls implemented
+predicted genre returns "rock" as a placeholder value since there is no model
+
 
 
 ## Getting Started

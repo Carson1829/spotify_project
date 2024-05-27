@@ -14,7 +14,6 @@ import {
   ListItem,
   ListItemButton
 } from "@mui/material/";
-import { blueGrey } from "@mui/material/colors";
 import styles from "./page.module.css";
 import { theme } from "./components/theme";
 
@@ -23,14 +22,15 @@ export default function Home() {
   const isMobile = useMediaQuery("(max-width: 700px)");
   const primary_color = theme.palette.primary;
   // setState for responsive frontend to any backend calls
-  const [tempMsg, settempMsg] = useState("");
+  const [tempMsg, setTempMsg] = useState("");
   const updateTempMsg = (newMsg: React.SetStateAction<string>) => {
-    settempMsg(newMsg);
+    setTempMsg(newMsg);
   };
 
   // State for search query and suggestions
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [selectedSong, setSelectedSong] = useState("");
 
   // Function to handle input changes
   const handleInputChange = async (event) => {
@@ -61,8 +61,13 @@ export default function Home() {
   
   const handleSuggestionClick = async (suggestion) => {
     console.log('Suggestion clicked:', suggestion);
-    setSearchQuery(suggestion.track + ' - ' + suggestion.artist);
+    const track = suggestion.suggestion.track;
+    const artist = suggestion.suggestion.artist;
+
+    // Set the search query
+    setSearchQuery('');
     setSuggestions([]);
+    setSelectedSong(`${track} - ${artist}`);
     
     try {
       const response = await fetch('http://localhost:5000/api/predict', {
@@ -70,7 +75,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ track: suggestion.track, artist: suggestion.artist }),
+        body: JSON.stringify({ track: track, artist: artist }),
       });
       
       console.log('Response status:', response.status);
@@ -80,7 +85,7 @@ export default function Home() {
       
       const data = await response.json();
       console.log('Received data:', data);
-      setTempMsg(data.genre);  // Display the predicted genre
+      setTempMsg(data.genre);  
     } catch (error) {
       console.error("Error fetching prediction:", error);
     }
@@ -100,7 +105,7 @@ export default function Home() {
           padding={1}
           justifyContent="center"
         >
-          <Paper sx={{ backgroundColor: primary_color.light }} elevation={10}>
+          <Paper sx={{ backgroundColor: primary_color.main }} elevation={10}>
             <Typography variant="h2" margin={2} className={styles.heading}>
               ECS 171 song genre prediction
             </Typography>
@@ -113,7 +118,7 @@ export default function Home() {
           >
             <Paper
               sx={{
-                backgroundColor: primary_color.light,
+                backgroundColor: primary_color.main,
                 height: "100%",
                 padding: { xs: 0, sm: 2 },
                 width: { xs: "100%", sm: "20%" }
@@ -133,11 +138,10 @@ export default function Home() {
                 }
               >
                 <h1>
-                Predicted Genre:
+                Song chosen:
                 </h1>
-                <Typography variant="h5" sx={{ margin: "10px" }}>
-                  {/* Temporary message for now, reacts to backend responses */}
-                  {tempMsg}
+                <Typography variant="body1" sx={{ margin: "10px" }}>
+                  {selectedSong}
                 </Typography>
 
                 {/* Search Bar */}
@@ -161,6 +165,17 @@ export default function Home() {
                   ))}
                 </List>
               </div>
+            </Paper>
+
+            {/* section displaying selected song */}
+            <Paper sx={{ backgroundColor: primary_color.main, height: "100%", padding: { xs: 0, sm: 2 }, width: { xs: "100%", sm: "20%" } }} elevation={5}>
+              <Typography variant="h6" sx={{ margin: "10px" }}>
+                Predicted genre:
+              </Typography>
+              <Typography variant="h5" sx={{ margin: "10px" }}>
+                {/* Temporary message for now, reacts to backend responses */}
+                {tempMsg}
+              </Typography>
             </Paper>
           </Stack>
         </Stack>

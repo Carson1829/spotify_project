@@ -17,18 +17,14 @@ def predict():
     app.logger.info(f'Received data: {data}')
     track = data.get('track')
     artist = data.get('artist')
-    
-    # Here you would call your machine learning model with the track and artist
-    # For this example, let's assume you have a function called `predict_genre`
     predicted_genre = predict_genre(track, artist)
     app.logger.info(f'Predicted genre: {predicted_genre}')
     
     return jsonify({'genre': predicted_genre})
 
 def predict_genre(track, artist):
-    # Placeholder function for running your machine learning model
-    # Replace this with your actual model prediction logic
-    return "Rock"  # Example genre
+    # Replace with machine learning model that would get called for a prediction
+    return "Rock"  # test genre
 
 if __name__ == '__main__':
     app.run(debug=True)
