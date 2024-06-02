@@ -2,22 +2,27 @@ import pandas as pd
 import pickle
 
 tracks = pd.read_csv("cleaned_data_mil.csv")
+track_df = [{'track': track['track_name'], 'artist': track['artists']} for _, track in tracks.iterrows()]
+
 model = pickle.load(open('best_knn_model_mil.pkl', 'rb'))
 encoder = pickle.load(open('encoder.pkl', 'rb'))
 scaler = pickle.load(open('scaler.pkl', 'rb'))
 
-def get_tracks():
-    # Adjust the file path to where your CSV file is located
-    track_df = [{'track': track['track_name'], 'artist': track['artists']} for _, track in tracks.iterrows()]
-    return track_df
-
-# Function to search track names
+# Function to give search bar suggestion by filtering through dataset
 def search_songs(query):
-    track_df = get_tracks()
-    matching_tracks = [track for track in track_df if query.lower() in track['track'].lower()]
+
+    matching_tracks = []
+    
+    # Iterate through the tracks until we find the top ten matches
+    for track in track_df:
+        if track['track'].lower().startswith(query.lower()):
+            matching_tracks.append(track)
+            if len(matching_tracks) == 20:
+                break  
+    
     return matching_tracks
 
-# Function to predict the genre of a song given its track and artist name
+# Function to get features of a song given its track and artist name
 def get_track_info(track, artist):
     # Find the song in the dataset
     song = tracks[(tracks['track_name'] == track) & (tracks['artists'] == artist)]
@@ -39,12 +44,14 @@ def predict_top_k(knn, X, k=3, n_neighbors=50):
     top_k = neighbor_labels.value_counts().head(k).index.tolist()
     return top_k
 
-# function to predict the genre
+# Function for prediction
 def predict_genre(track, artist):
     features = get_track_info(track, artist)
     predictions = predict_top_k(model, features, k=3)
+    # Convert list of genres to comma-separated string
+    predicted_genre_str = ', '.join(predictions)
     
-    return predictions
+    return predicted_genre_str
 
 
   

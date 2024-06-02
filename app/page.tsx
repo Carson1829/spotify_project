@@ -26,7 +26,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedSong, setSelectedSong] = useState("");
-  const [predictedGenres, setPredictedGenres] = useState([]);
+  const [predictedGenres, setPredictedGenres] = useState("");
 
   // function to handle input changes in search bar
   const handleInputChange = async (event) => {
@@ -168,7 +168,7 @@ export default function Home() {
               </Typography>
               <Typography variant="h5" sx={{ margin: "10px" }}>
                 {/* reacts to backend responses */}
-                {predictedGenres.join(', ')}
+                {predictedGenres}
               </Typography>
             </Paper>
           </Stack>

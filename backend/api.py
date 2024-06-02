@@ -18,10 +18,10 @@ def predict():
     app.logger.info(f'Received data: {data}')
     track = data.get('track')
     artist = data.get('artist')
-    predicted_genre = predict_genre(track, artist)
-    app.logger.info(f'Predicted genre: {predicted_genre}')
+    predicted_genres = predict_genre(track, artist)
+    app.logger.info(f'Predicted genre: {predicted_genres}')
     
-    return jsonify({'genre': predicted_genre})
+    return jsonify({'genres': predicted_genres})
 
 if __name__ == '__main__':
     app.run(debug=True)

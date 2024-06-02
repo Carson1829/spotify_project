@@ -45,7 +45,10 @@ def predict_top_k(knn, X, k=3, n_neighbors=50):
     
     neighbor_labels = tracks.iloc[neighbors[0]]["genre"]
     top_k = neighbor_labels.value_counts().head(k).index.tolist()
-    return top_k
+
+    predicted_genre_str = ', '.join(top_k)
+    
+    return predicted_genre_str
 
 # Example usage of predict_genre
 predicted_genre = predict_genre("Arabella", "Arctic Monkeys")
