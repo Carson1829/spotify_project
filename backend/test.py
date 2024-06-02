@@ -5,9 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 # Load the dataset and the model
 tracks = pd.read_csv("cleaned_data_mil.csv")
 
-# Load the model and encoder from the pickle file
-# with open('best_knn_model_mil.pkl', 'rb') as f:
-#    model, encoder = pickle.load(f)
+# Load pickled files
 model = pickle.load(open('best_knn_model_mil.pkl', 'rb'))
 encoder = pickle.load(open('encoder.pkl', 'rb'))
 scaler = pickle.load(open('scaler.pkl', 'rb'))
@@ -15,11 +13,7 @@ scaler = pickle.load(open('scaler.pkl', 'rb'))
 def get_track_info(track, artist): 
     # Find the song in the dataset
     song = tracks[(tracks['track_name'] == track) & (tracks['artists'] == artist)]
-    
-    # Check if the song exists in the dataset
-    if song.empty:
-        return None
-    
+
     # Extract the features for the song
     features = song[['popularity', 'duration_ms', 'danceability', 'energy', 'key', 'loudness', 'mode', 
                      'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 
@@ -49,20 +43,16 @@ def predict_genre(track, artist):
 def predict_top_k(knn, X, k=3, n_neighbors=50):
     neighbors = knn.kneighbors(X, n_neighbors=n_neighbors, return_distance=False)
     
-    top_k_predictions = []
-    for neighbor in neighbors:
-        neighbor_labels = tracks.iloc[neighbor]['genre']
-        top_k = neighbor_labels.value_counts().head(k).index.tolist()
-        top_k_predictions.append(top_k)
-    
-    return top_k_predictions
+    neighbor_labels = tracks.iloc[neighbors[0]]["genre"]
+    top_k = neighbor_labels.value_counts().head(k).index.tolist()
+    return top_k
 
 # Example usage of predict_genre
 predicted_genre = predict_genre("Arabella", "Arctic Monkeys")
 print(f"The predicted genre is: {predicted_genre}")
 
 # prediction top 3 genres
-features = get_track_info("Arabella", "Arctic Monkeys")
+features = get_track_info("Love Story", "Taylor Swift")
 if features is not None:
     top_k_predictions = predict_top_k(model, features, k=3)
     print(f"Top k predicted genres: {top_k_predictions}")

@@ -22,11 +22,11 @@ export default function Home() {
   const isMobile = useMediaQuery("(max-width: 700px)");
   const primary_color = theme.palette.primary;
   // setState for responsive frontend to any backend calls
-  const [tempMsg, setTempMsg] = useState("");
 
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedSong, setSelectedSong] = useState("");
+  const [predictedGenres, setPredictedGenres] = useState([]);
 
   // function to handle input changes in search bar
   const handleInputChange = async (event) => {
@@ -80,7 +80,7 @@ export default function Home() {
       
       const data = await response.json();
       console.log('Received data:', data);
-      setTempMsg(data.genre);  
+      setPredictedGenres(data.genres);
     } catch (error) {
       console.error("Error fetching prediction:", error);
     }
@@ -164,11 +164,11 @@ export default function Home() {
             {/* section displaying predicted genre*/}
             <Paper sx={{ backgroundColor: primary_color.main, height: "100%", padding: { xs: 0, sm: 2 }, width: { xs: "100%", sm: "20%" } }} elevation={5}>
               <Typography variant="h6" sx={{ margin: "10px" }}>
-                Predicted genre:
+                Predicted genres:
               </Typography>
               <Typography variant="h5" sx={{ margin: "10px" }}>
                 {/* reacts to backend responses */}
-                {tempMsg}
+                {predictedGenres.join(', ')}
               </Typography>
             </Paper>
           </Stack>
