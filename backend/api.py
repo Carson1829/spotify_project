@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from data import search_songs, get_track_info
+from data import search_songs, predict_genre
 import pandas as pd
 
 app = Flask(__name__)
@@ -22,12 +22,6 @@ def predict():
     app.logger.info(f'Predicted genre: {predicted_genre}')
     
     return jsonify({'genre': predicted_genre})
-
-def predict_genre(track, artist):
-    # Replace with machine learning model that would get called for a prediction
-    test = get_track_info(track, artist)
-    return test  # test genre
-
 
 if __name__ == '__main__':
     app.run(debug=True)
