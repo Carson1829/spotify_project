@@ -1,10 +1,8 @@
 ## TODO
-add model to the predict song function and work on backend 
+none
 
 ## CURRENT STATE
-can search and click on a song suggestion from the dataset <br />
-has frontend to backend calls implemented <br />
-predicted genre returns "rock" as a placeholder value since there is no model <br />
+it works
 
 ## Running it
 First, make sure you have the npm and flask-cors packages installed. <br />
