@@ -2,6 +2,9 @@ import pandas as pd
 import pickle
 
 tracks = pd.read_csv("cleaned_data_f.csv")
+model = pickle.load(open('best_knn_model_mil.pkl', 'rb'))
+encoder = pickle.load(open('encoder.pkl', 'rb'))
+scaler = pickle.load(open('scaler.pkl', 'rb'))
 
 def get_tracks():
     # Adjust the file path to where your CSV file is located
@@ -23,7 +26,10 @@ def get_track_info(track, artist):
     features = song[['popularity', 'duration_ms', 'danceability', 'energy', 'key', 'loudness', 'mode', 
                      'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 
                      'time_signature']]
-    return features
+
+    features_scaled = scaler.transform(features)
+
+    return features_scaled
 
 # Function to predict top k genres
 def predict_top_k(knn, X, k=3, n_neighbors=50):
@@ -35,8 +41,6 @@ def predict_top_k(knn, X, k=3, n_neighbors=50):
 
 # function to predict the genre
 def predict_genre(track, artist):
-    
-    model = pickle.load(open('best_knn_model_mil.pkl', 'rb'))
     features = get_track_info(track, artist)
     top_k_predictions = predict_top_k(model, features, k=3)
     

@@ -9,7 +9,8 @@ tracks = pd.read_csv("cleaned_data_mil.csv")
 # with open('best_knn_model_mil.pkl', 'rb') as f:
 #    model, encoder = pickle.load(f)
 model = pickle.load(open('best_knn_model_mil.pkl', 'rb'))
-
+encoder = pickle.load(open('encoder.pkl', 'rb'))
+scaler = pickle.load(open('scaler.pkl', 'rb'))
 # Function to get track features given the track and artist name
 def get_track_info(track, artist): 
     # Find the song in the dataset
@@ -23,7 +24,9 @@ def get_track_info(track, artist):
     features = song[['popularity', 'duration_ms', 'danceability', 'energy', 'key', 'loudness', 'mode', 
                      'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 
                      'time_signature']]
-    return features
+    
+    features_scaled = scaler.transform(features)
+    return features_scaled
 
 # Function to predict the genre of a song given its track and artist name
 def predict_genre(track, artist):
@@ -37,10 +40,10 @@ def predict_genre(track, artist):
     encoded_prediction = model.predict(features)
     
     # Reverse the label encoding to get the original genre
-    # genre_prediction = encoder.inverse_transform(encoded_prediction)
+    genre_prediction = encoder.inverse_transform(encoded_prediction)
     
     # Return the predicted genre
-    return encoded_prediction[0]
+    return genre_prediction[0]
 
 # Function to predict top k genres
 def predict_top_k(knn, X, k=3, n_neighbors=50):
@@ -55,11 +58,11 @@ def predict_top_k(knn, X, k=3, n_neighbors=50):
     return top_k_predictions
 
 # Example usage of predict_genre
-predicted_genre = predict_genre("Shape of You", "Ed Sheeran")
+predicted_genre = predict_genre("Arabella", "Arctic Monkeys")
 print(f"The predicted genre is: {predicted_genre}")
 
 # prediction top 3 genres
-features = get_track_info("You", "Kyle McEvoy")
+features = get_track_info("Arabella", "Arctic Monkeys")
 if features is not None:
     top_k_predictions = predict_top_k(model, features, k=3)
     print(f"Top k predicted genres: {top_k_predictions}")
