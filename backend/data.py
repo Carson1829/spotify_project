@@ -13,14 +13,27 @@ def search_songs(query):
     return [track for track in track_names if query.lower() in track.lower()]
 
 '''
-def get_track_info():
+tracks = pd.read_csv("cleaned_data_f.csv")
+
+def get_tracks():
     # Adjust the file path to where your CSV file is located
-    tracks = pd.read_csv("cleaned_data_f.csv")
-    track_info = [{'track': track['track_name'], 'artist': track['artists']} for _, track in tracks.iterrows()]
-    return track_info
+    track_df = [{'track': track['track_name'], 'artist': track['artists']} for _, track in tracks.iterrows()]
+    return track_df
 
 # Function to search track names
 def search_songs(query):
-    track_info = get_track_info()
-    matching_tracks = [track for track in track_info if query.lower() in track['track'].lower()]
+    track_df = get_tracks()
+    matching_tracks = [track for track in track_df if query.lower() in track['track'].lower()]
     return matching_tracks
+
+# Function to predict the genre of a song given its track and artist name
+def get_track_info(track, artist):
+    # Find the song in the dataset
+    song = tracks[(tracks['track_name'] == track) & (tracks['artists'] == artist)]
+    
+    # Check if the song exists in the dataset
+    if song.empty:
+        return "0"
+    else:
+        return "1"
+  
